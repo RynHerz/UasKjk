@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vintage Haven - Thrift Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7d6e5e;
+            --secondary: #a89585;
+            --accent: #c4b5a0;
+            --dark: #4a4238;
+            --light: #f5f1eb;
+            --cream: #faf8f3;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--cream);
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--light);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .cart-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            padding: 6rem 5%;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--dark);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a3228;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background-color: white;
+            color: var(--dark);
+        }
+
+        /* Categories */
+        .categories {
+            padding: 4rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary);
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-card {
+            background-color: var(--light);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Products */
+        .products {
+            padding: 4rem 5%;
+            background-color: var(--light);
+        }
+
+        .products-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.7rem 1.5rem;
+            border: 2px solid var(--secondary);
+            background-color: transparent;
+            color: var(--dark);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 300px;
+            background-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-category {
+            color: var(--secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+            color: var(--dark);
+        }
+
+        .product-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .add-to-cart {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background-color: var(--dark);
+            transform: scale(1.05);
+        }
+
+        /* About Section */
+        .about {
+            padding: 4rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+        }
+
+        .about-text p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+            color: var(--dark);
+        }
+
+        .about-image {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            height: 400px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 5%;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .social-icon:hover {
+            background-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--secondary);
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="#" class="logo">🌿 Vintage Haven</a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#categories">Kategori</a></li>
+                <li><a href="#products">Produk</a></li>
+                <li><a href="#about">Tentang</a></li>
+            </ul>
+            <div class="cart-icon" onclick="showCart()">
+                🛒
+                <span class="cart-count">0</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1>Temukan Gaya Vintage Anda</h1>
+        <p>Koleksi pakaian thrift pilihan dengan kualitas terbaik dan harga terjangkau</p>
+        <div class="hero-buttons">
+            <a href="#products" class="btn btn-primary">Belanja Sekarang</a>
+            <a href="#about" class="btn btn-secondary">Pelajari Lebih</a>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories" id="categories">
+        <h2 class="section-title">Kategori Favorit</h2>
+        <div class="category-grid">
+            <div class="category-card" onclick="filterProducts('jaket')">
+                <div class="category-icon">🧥</div>
+                <h3>Jaket & Outerwear</h3>
+                <p>Koleksi jaket vintage berkualitas</p>
+            </div>
+            <div class="category-card" onclick="filterProducts('kemeja')">
+                <div class="category-icon">👔</div>
+                <h3>Kemeja & Tops</h3>
+                <p>Kemeja vintage untuk berbagai acara</p>
+            </div>
+            <div class="category-card" onclick="filterProducts('celana')">
+                <div class="category-icon">👖</div>
+                <h3>Celana & Jeans</h3>
+                <p>Denim dan celana vintage pilihan</p>
+            </div>
+            <div class="category-card" onclick="filterProducts('aksesoris')">
+                <div class="category-icon">👜</div>
+                <h3>Aksesoris</h3>
+                <p>Tas, topi, dan aksesoris lainnya</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section class="products" id="products">
+        <div class="products-container">
+            <h2 class="section-title">Produk Pilihan</h2>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterProducts('semua')">Semua</button>
+                <button class="filter-btn" onclick="filterProducts('jaket')">Jaket</button>
+                <button class="filter-btn" onclick="filterProducts('kemeja')">Kemeja</button>
+                <button class="filter-btn" onclick="filterProducts('celana')">Celana</button>
+                <button class="filter-btn" onclick="filterProducts('aksesoris')">Aksesoris</button>
+            </div>
+
+            <div class="product-grid" id="productGrid">
+                <!-- Products will be generated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section class="about" id="about">
+        <div class="about-content">
+            <div class="about-text">
+                <h2>Tentang Vintage Haven</h2>
+                <p>Vintage Haven adalah destinasi utama untuk para pencinta fashion vintage dan thrift di Indonesia. Kami percaya bahwa setiap pakaian memiliki cerita dan jiwa tersendiri.</p>
+                <p>Dengan koleksi yang dipilih secara teliti, kami menawarkan pakaian berkualitas tinggi dengan harga yang terjangkau. Semua produk kami melalui proses kurasi ketat untuk memastikan kondisi terbaik.</p>
+                <p>Mari bergabung dengan gerakan fashion berkelanjutan dan temukan gaya unik Anda bersama kami!</p>
+                <a href="#products" class="btn btn-primary" style="margin-top: 1rem;">Jelajahi Koleksi</a>
+            </div>
+            <div class="about-image">
+                ♻️
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Vintage Haven</h3>
+                <p>Thrift shop terpercaya dengan koleksi vintage pilihan untuk gaya yang unik dan berkelanjutan.</p>
+                <div class="social-icons">
+                    <div class="social-icon">📘</div>
+                    <div class="social-icon">📷</div>
+                    <div class="social-icon">🐦</div>
+                    <div class="social-icon">💬</div>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Navigasi</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#categories">Kategori</a></li>
+                    <li><a href="#products">Produk</a></li>
+                    <li><a href="#about">Tentang Kami</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Layanan</h3>
+                <ul>
+                    <li><a href="#">Cara Berbelanja</a></li>
+                    <li><a href="#">Kebijakan Pengembalian</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Hubungi Kami</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Kontak</h3>
+                <ul>
+                    <li>📧 info@vintagehaven.com</li>
+                    <li>📱 +62 812-3456-7890</li>
+                    <li>📍 Jakarta, Indonesia</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Vintage Haven. All rights reserved. Made with ❤️</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Product Data
+        const products = [
+            { id: 1, name: 'Denim Jacket Vintage', category: 'jaket', price: 'Rp 150.000', icon: '🧥', badge: 'Best Seller' },
+            { id: 2, name: 'Flannel Shirt Classic', category: 'kemeja', price: 'Rp 85.000', icon: '👔', badge: 'New' },
+            { id: 3, name: 'Jeans Highwaist 90s', category: 'celana', price: 'Rp 120.000', icon: '👖', badge: 'Hot' },
+            { id: 4, name: 'Leather Bag Vintage', category: 'aksesoris', price: 'Rp 200.000', icon: '👜', badge: 'Limited' },
+            { id: 5, name: 'Bomber Jacket', category: 'jaket', price: 'Rp 175.000', icon: '🧥', badge: 'Popular' },
+            { id: 6, name: 'Hawaiian Shirt', category: 'kemeja', price: 'Rp 95.000', icon: '👔', badge: 'New' },
+            { id: 7, name: 'Cargo Pants', category: 'celana', price: 'Rp 110.000', icon: '👖', badge: '' },
+            { id: 8, name: 'Vintage Sunglasses', category: 'aksesoris', price: 'Rp 65.000', icon: '🕶️', badge: '' },
+            { id: 9, name: 'Corduroy Jacket', category: 'jaket', price: 'Rp 165.000', icon: '🧥', badge: 'Hot' },
+            { id: 10, name: 'Polo Shirt Retro', category: 'kemeja', price: 'Rp 75.000', icon: '👔', badge: '' },
+            { id: 11, name: 'Wide Leg Jeans', category: 'celana', price: 'Rp 135.000', icon: '👖', badge: 'New' },
+            { id: 12, name: 'Bucket Hat', category: 'aksesoris', price: 'Rp 45.000', icon: '🎩', badge: '' }
+        ];
+
+        let cartCount = 0;
+
+        // Render Products
+        function renderProducts(filterCategory = 'semua') {
+            const productGrid = document.getElementById('productGrid');
+            productGrid.innerHTML = '';
+
+            const filteredProducts = filterCategory === 'semua' 
+                ? products 
+                : products.filter(p => p.category === filterCategory);
+
+            filteredProducts.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                card.innerHTML = `
+                    <div class="product-image">
+                        ${product.icon}
+                        ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${product.category}</div>
+                        <h3 class="product-name">${product.name}</h3>
+                        <div class="product-price">
+                            <span class="price">${product.price}</span>
+                            <button class="add-to-cart" onclick="addToCart(${product.id})">
+                                Tambah
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                productGrid.appendChild(card);
+            });
+        }
+
+        // Filter Products
+        function filterProducts(category) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Render filtered products
+            renderProducts(category);
+        }
+
+        // Add to Cart
+        function addToCart(productId) {
+            cartCount++;
+            document.querySelector('.cart-count').textContent = cartCount;
+            
+            const product = products.find(p => p.id === productId);
+            showToast(`${product.name} ditambahkan ke keranjang!`);
+        }
+
+        // Show Cart
+        function showCart() {
+            if (cartCount === 0) {
+                showToast('Keranjang masih kosong!');
+            } else {
+                showToast(`Anda memiliki ${cartCount} item di keranjang`);
+            }
+        }
+
+        // Show Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Initialize
+        renderProducts();
+    </script>
+</body>
+</html>

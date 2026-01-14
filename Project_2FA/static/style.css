@@ -1,0 +1,494 @@
+/* ===================================
+   RESET & BASE STYLES
+   =================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #2c3e50;
+    line-height: 1.6;
+}
+
+/* ===================================
+   CONTAINER
+   =================================== */
+.container {
+    background: white;
+    padding: 45px 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    max-width: 520px;
+    width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ===================================
+   TYPOGRAPHY
+   =================================== */
+h2 {
+    color: #1a202c;
+    margin-bottom: 8px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+h3 {
+    color: #2d3748;
+    margin: 25px 0 15px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+p {
+    color: #4a5568;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+/* ===================================
+   FORM ELEMENTS
+   =================================== */
+.form-group {
+    margin-bottom: 22px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #2d3748;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    color: #1a202c;
+}
+
+input:focus {
+    outline: none;
+    border-color: #6b7fd7;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(107, 127, 215, 0.1);
+}
+
+input::placeholder {
+    color: #a0aec0;
+}
+
+/* ===================================
+   BUTTONS
+   =================================== */
+button, .btn {
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #6b7fd7 0%, #5a6bc5 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    margin-top: 8px;
+    box-shadow: 0 4px 12px rgba(107, 127, 215, 0.2);
+}
+
+button:hover, .btn:hover {
+    background: linear-gradient(135deg, #5a6bc5 0%, #4956b3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(107, 127, 215, 0.3);
+}
+
+button:active, .btn:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+    box-shadow: 0 4px 12px rgba(113, 128, 150, 0.2);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    box-shadow: 0 6px 18px rgba(113, 128, 150, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #e07c7c 0%, #d66b6b 100%);
+    box-shadow: 0 4px 12px rgba(224, 124, 124, 0.2);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #d66b6b 0%, #c55a5a 100%);
+    box-shadow: 0 6px 18px rgba(224, 124, 124, 0.3);
+}
+
+/* ===================================
+   ALERTS
+   =================================== */
+.alert {
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 22px;
+    font-size: 14px;
+    border-left: 4px solid;
+    display: flex;
+    align-items: center;
+}
+
+.alert::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.alert-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-color: #4caf50;
+}
+
+.alert-danger {
+    background: #fce8e8;
+    color: #c53030;
+    border-color: #e07c7c;
+}
+
+.alert-info {
+    background: #e3f2fd;
+    color: #1565c0;
+    border-color: #6b7fd7;
+}
+
+.alert-warning {
+    background: #fff3e0;
+    color: #e65100;
+    border-color: #ff9800;
+}
+
+/* ===================================
+   CAPTCHA
+   =================================== */
+.captcha-box {
+    background: linear-gradient(135deg, #6b7fd7 0%, #5a6bc5 100%);
+    padding: 18px;
+    border-radius: 10px;
+    margin: 12px 0;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(107, 127, 215, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.captcha-text {
+    font-family: 'Courier New', monospace;
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+/* ===================================
+   QR CODE
+   =================================== */
+.qr-container {
+    text-align: center;
+    margin: 25px 0;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 2px dashed #cbd5e0;
+}
+
+.qr-container img {
+    max-width: 240px;
+    border: 3px solid #6b7fd7;
+    border-radius: 12px;
+    padding: 12px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(107, 127, 215, 0.15);
+}
+
+.secret-code {
+    background: #f8fafc;
+    padding: 16px 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 17px;
+    font-weight: bold;
+    color: #6b7fd7;
+    margin: 20px 0;
+    letter-spacing: 3px;
+    border: 2px solid #e2e8f0;
+    word-break: break-all;
+}
+
+/* ===================================
+   USER INFO
+   =================================== */
+.user-info {
+    background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    border: 1px solid #e2e8f0;
+}
+
+.user-info h3 {
+    margin-top: 0;
+    color: #1a202c;
+    font-size: 22px;
+}
+
+.user-info p {
+    color: #4a5568;
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+/* ===================================
+   2FA STATUS
+   =================================== */
+.two-fa-status {
+    background: #e3f2fd;
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 18px;
+    border-left: 4px solid #6b7fd7;
+}
+
+.two-fa-status p {
+    margin: 0 0 12px 0;
+    color: #2d3748;
+}
+
+.two-fa-status form {
+    margin-top: 12px;
+}
+
+/* ===================================
+   TABLE
+   =================================== */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 18px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+th {
+    background: linear-gradient(135deg, #6b7fd7 0%, #5a6bc5 100%);
+    color: white;
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #4a5568;
+    font-size: 14px;
+}
+
+tr {
+    background: white;
+}
+
+tr:hover {
+    background: #f8fafc;
+    transition: background 0.2s ease;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===================================
+   BADGES
+   =================================== */
+.badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.badge-success {
+    background: #c6f6d5;
+    color: #276749;
+}
+
+.badge-failed {
+    background: #fcd1d1;
+    color: #c53030;
+}
+
+.badge-pending_otp {
+    background: #feebc8;
+    color: #c05621;
+}
+
+.badge-info {
+    background: #bee3f8;
+    color: #2c5282;
+}
+
+.badge-failed_captcha {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+/* ===================================
+   LINKS
+   =================================== */
+a {
+    color: #6b7fd7;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+a:hover {
+    color: #5a6bc5;
+    text-decoration: underline;
+}
+
+p a {
+    font-size: 14px;
+}
+
+/* Bottom text links */
+body > .container > p {
+    text-align: center;
+    margin-top: 22px;
+    color: #718096;
+    font-size: 14px;
+}
+
+/* ===================================
+   SMALL TEXT
+   =================================== */
+small {
+    color: #718096;
+    font-size: 13px;
+}
+
+/* ===================================
+   RESPONSIVE
+   =================================== */
+@media (max-width: 600px) {
+    .container {
+        padding: 35px 25px;
+    }
+    
+    h2 {
+        font-size: 24px;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+    
+    button, .btn {
+        padding: 13px 20px;
+        font-size: 14px;
+    }
+    
+    .captcha-text {
+        font-size: 22px;
+        letter-spacing: 8px;
+    }
+    
+    table {
+        font-size: 13px;
+    }
+    
+    th, td {
+        padding: 10px 12px;
+    }
+}
+
+/* ===================================
+   ANIMATIONS
+   =================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    animation: fadeIn 0.4s ease;
+}
+
+/* Input autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 30px #f8fafc inset !important;
+    -webkit-text-fill-color: #1a202c !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+    outline: 2px solid #6b7fd7;
+    outline-offset: 2px;
+}
+
+/* Selection styling */
+::selection {
+    background: #6b7fd7;
+    color: white;
+}

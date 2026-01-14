@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pilih Metode Verifikasi - 2FA System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .verification-container {
+            max-width: 550px;
+            width: 90%;
+            background: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .verification-container h2 {
+            margin-bottom: 10px;
+            color: #1f2937;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .verification-container > p {
+            color: #6b7280;
+            margin-bottom: 45px;
+            font-size: 15px;
+        }
+        
+        .verification-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .option-block {
+            flex: 1;
+            max-width: 200px;
+            padding: 35px 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 3px solid transparent;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+        
+        .option-block:hover::before {
+            opacity: 1;
+        }
+        
+        .option-block:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            border-color: #667eea;
+        }
+        
+        .option-block:hover h3 {
+            color: white;
+        }
+        
+        .option-block h3 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 700;
+            color: #1f2937;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+        
+        .option-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 9998;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 45px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            max-width: 520px;
+            width: 90%;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modal.show {
+            display: block;
+        }
+        
+        .modal-overlay.show {
+            display: block;
+        }
+        
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        
+        .modal-header h3 {
+            color: #1f2937;
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .modal-header p {
+            color: #6b7280;
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .qr-container {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            margin: 25px 0;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .qr-container img {
+            max-width: 230px;
+            border: 3px solid white;
+            border-radius: 12px;
+            padding: 12px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .secret-code {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px dashed #cbd5e0;
+            color: #1f2937;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+        
+        .otp-form {
+            margin-top: 25px;
+        }
+        
+        .otp-input {
+            width: 100%;
+            padding: 16px;
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .otp-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            border-color: #cbd5e0;
+            transform: translateY(-1px);
+        }
+        
+        .info-text {
+            text-align: center;
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 20px;
+            line-height: 1.6;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 22px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            background: #667eea;
+            color: white;
+            transform: rotate(90deg);
+        }
+        
+        .email-preview {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            margin: 25px 0;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .email-preview p {
+            color: #4b5563;
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        
+        .email-preview strong {
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -48%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .verification-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .option-block {
+                max-width: 280px;
+            }
+            
+            .verification-container {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <h2>Pilih Metode Verifikasi</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <p>Pilih salah satu metode untuk verifikasi keamanan</p>
+        
+        <div class="verification-options">
+            <div class="option-block" onclick="showQRModal()">
+                <div class="option-icon">🔐</div>
+                <h3>QR Autentikasi</h3>
+            </div>
+            
+            <div class="option-block" onclick="showEmailModal()">
+                <div class="option-icon">📧</div>
+                <h3>Email OTP</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    
+    <!-- Modal QR Code -->
+    <div class="modal" id="qrModal">
+        <button class="modal-close" onclick="closeModals()">×</button>
+        <div class="modal-header">
+            <h3>QR Autentikasi</h3>
+            <p>Scan QR Code dengan aplikasi authenticator</p>
+        </div>
+        
+        <div class="qr-container">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+        </div>
+        
+        <p style="text-align: center; color: #6b7280; margin: 15px 0; font-size: 13px; font-weight: 500;">
+            Atau masukkan kode manual:
+        </p>
+        <div class="secret-code">{{ secret }}</div>
+        
+        <form method="POST" action="{{ url_for('verify_otp') }}" class="otp-form">
+            <input type="text" 
+                   name="otp_code" 
+                   class="otp-input"
+                   placeholder="000000" 
+                   maxlength="6" 
+                   pattern="[0-9]{6}" 
+                   required
+                   autocomplete="off">
+            <button type="submit" class="btn-primary">Verifikasi</button>
+        </form>
+        
+        <p class="info-text">
+            Masukkan 6 digit kode dari aplikasi authenticator Anda
+        </p>
+    </div>
+    
+    <!-- Modal Email OTP -->
+    <div class="modal" id="emailModal">
+        <button class="modal-close" onclick="closeModals()">×</button>
+        <div class="modal-header">
+            <h3>Email OTP</h3>
+            <p>Kode akan dikirim ke email Anda</p>
+        </div>
+        
+        <div class="email-preview">
+            <p>Kode akan dikirim ke:</p>
+            <p><strong>{{ user_email }}</strong></p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('send_email_otp_route') }}">
+            <button type="submit" class="btn-primary">Kirim Kode</button>
+        </form>
+        
+        <button type="button" class="btn-secondary" onclick="showEmailOTPForm()">
+            Sudah punya kode?
+        </button>
+        
+        <p class="info-text">
+            Kode berlaku selama 5 menit setelah dikirim
+        </p>
+    </div>
+    
+    <!-- Modal Email OTP Input Form -->
+    <div class="modal" id="emailOTPFormModal">
+        <button class="modal-close" onclick="closeModals()">×</button>
+        <div class="modal-header">
+            <h3>Masukkan Kode OTP</h3>
+            <p>Cek inbox atau folder spam Anda</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('verify_email_otp') }}" class="otp-form">
+            <input type="text" 
+                   name="otp_code" 
+                   class="otp-input"
+                   placeholder="000000" 
+                   maxlength="6" 
+                   pattern="[0-9]{6}" 
+                   required
+                   autocomplete="off">
+            <button type="submit" class="btn-primary">Verifikasi</button>
+        </form>
+        
+        <form method="POST" action="{{ url_for('send_email_otp_route') }}" style="margin-top: 10px;">
+            <button type="submit" class="btn-secondary">Kirim Ulang</button>
+        </form>
+        
+        <p class="info-text">
+            Belum menerima kode? Periksa folder spam atau kirim ulang
+        </p>
+    </div>
+
+    <script>
+        const modalOverlay = document.getElementById('modalOverlay');
+        const qrModal = document.getElementById('qrModal');
+        const emailModal = document.getElementById('emailModal');
+        const emailOTPFormModal = document.getElementById('emailOTPFormModal');
+        
+        function showQRModal() {
+            modalOverlay.classList.add('show');
+            qrModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function showEmailModal() {
+            modalOverlay.classList.add('show');
+            emailModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function showEmailOTPForm() {
+            emailModal.classList.remove('show');
+            emailOTPFormModal.classList.add('show');
+        }
+        
+        function closeModals() {
+            modalOverlay.classList.remove('show');
+            qrModal.classList.remove('show');
+            emailModal.classList.remove('show');
+            emailOTPFormModal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+        
+        modalOverlay.addEventListener('click', closeModals);
+        
+        [qrModal, emailModal, emailOTPFormModal].forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+        
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.target.classList.contains('show')) {
+                    const input = mutation.target.querySelector('.otp-input');
+                    if (input) {
+                        setTimeout(() => input.focus(), 100);
+                    }
+                }
+            });
+        });
+        
+        [qrModal, emailOTPFormModal].forEach(modal => {
+            observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+        });
+        
+        document.querySelectorAll('.otp-input').forEach(input => {
+            input.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        });
+    </script>
+</body>
+</html>

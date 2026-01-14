@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - 2FA System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Modal Overlay */
+        .captcha-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 9998;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Modal Container */
+        .captcha-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            max-width: 450px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .captcha-modal.show {
+            display: block;
+        }
+        
+        .captcha-modal-overlay.show {
+            display: block;
+        }
+        
+        .captcha-modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .captcha-modal-header h3 {
+            color: #1a202c;
+            margin: 0 0 10px 0;
+            font-size: 22px;
+        }
+        
+        .captcha-modal-header p {
+            color: #718096;
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .slider-captcha-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .captcha-canvas-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 300px;
+            height: 150px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .captcha-background {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 8px;
+        }
+        
+        .puzzle-piece {
+            position: absolute;
+            left: 0;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            z-index: 10;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+        
+        .slider-track {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            height: 50px;
+            background: #e2e8f0;
+            border-radius: 25px;
+            overflow: visible;
+            margin: 15px auto 0;
+        }
+        
+        .slider-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #6b7fd7 0%, #5a6bc5 100%);
+            border-radius: 25px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+        
+        .slider-button {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            border: 3px solid #6b7fd7;
+            cursor: grab;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.1s ease;
+            z-index: 10;
+        }
+        
+        .slider-button:active {
+            cursor: grabbing;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .slider-button::before {
+            content: '⬌';
+            color: #6b7fd7;
+            font-weight: bold;
+        }
+        
+        .captcha-instruction {
+            text-align: center;
+            color: #4a5568;
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        
+        .captcha-success {
+            background: #c6f6d5 !important;
+            border-color: #4caf50 !important;
+        }
+        
+        .captcha-success .slider-button {
+            border-color: #4caf50 !important;
+        }
+        
+        .captcha-success .slider-button::before {
+            content: '✓';
+            color: #4caf50;
+        }
+        
+        .captcha-success .captcha-instruction {
+            color: #276749 !important;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-cancel:hover {
+            background: #cbd5e0;
+        }
+        
+        .btn-verify {
+            background: linear-gradient(135deg, #6b7fd7 0%, #5a6bc5 100%);
+            color: white;
+        }
+        
+        .btn-verify:hover {
+            background: linear-gradient(135deg, #5a6bc5 0%, #4956b3 100%);
+        }
+        
+        .btn-verify:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form id="loginForm" method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            
+            <!-- Hidden input untuk slider position -->
+            <input type="hidden" name="slider_position" id="sliderPositionInput" value="0">
+            
+            <button type="submit" id="submitBtn">Login</button>
+        </form>
+        
+        <p>Belum punya akun? <a href="{{ url_for('register') }}">Daftar disini</a></p>
+    </div>
+
+    <!-- CAPTCHA Modal Overlay -->
+    <div class="captcha-modal-overlay" id="captchaOverlay"></div>
+    
+    <!-- CAPTCHA Modal -->
+    <div class="captcha-modal" id="captchaModal">
+        <div class="captcha-modal-header">
+            <h3>🔐 Verifikasi Keamanan</h3>
+            <p>Selesaikan puzzle berikut untuk melanjutkan</p>
+        </div>
+        
+        <div class="slider-captcha-container" id="captchaContainer">
+            <div class="captcha-canvas-wrapper" id="canvasWrapper">
+                <img src="data:image/png;base64,{{ captcha_background }}" 
+                     alt="Captcha Background" 
+                     class="captcha-background"
+                     id="captchaBackground">
+                <img src="data:image/png;base64,{{ captcha_piece }}" 
+                     alt="Puzzle Piece" 
+                     class="puzzle-piece"
+                     id="puzzlePiece"
+                     style="top: {{ target_y }}px;">
+            </div>
+            
+            <div class="slider-track" id="sliderTrack">
+                <div class="slider-fill" id="sliderFill"></div>
+                <div class="slider-button" id="sliderButton"></div>
+            </div>
+            
+            <p class="captcha-instruction" id="captchaInstruction">
+                Geser slider ke kanan hingga puzzle piece pas dengan slot
+            </p>
+        </div>
+        
+        <div class="modal-buttons">
+            <button type="button" class="btn-cancel" onclick="closeCaptcha()">Batal</button>
+            <button type="button" class="btn-verify" id="verifyBtn" onclick="submitForm()">Login</button>
+        </div>
+    </div>
+
+    <script>
+        // Variabel global
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        let verified = false;
+        
+        const canvasWidth = 300;
+        const maxSlide = canvasWidth - 50;
+        const targetX = 150;
+        const tolerance = 30;
+        
+        // Elemen
+        const loginForm = document.getElementById('loginForm');
+        const captchaModal = document.getElementById('captchaModal');
+        const captchaOverlay = document.getElementById('captchaOverlay');
+        const sliderButton = document.getElementById('sliderButton');
+        const sliderFill = document.getElementById('sliderFill');
+        const puzzlePiece = document.getElementById('puzzlePiece');
+        const captchaInstruction = document.getElementById('captchaInstruction');
+        const captchaContainer = document.getElementById('captchaContainer');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const sliderPositionInput = document.getElementById('sliderPositionInput');
+        
+        // Event listener untuk form submit - PERBAIKAN UTAMA
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            // Validasi input
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('Username dan password harus diisi!');
+                return;
+            }
+            
+            // Tampilkan modal CAPTCHA
+            showCaptcha();
+        });
+        
+        // Fungsi untuk menampilkan modal CAPTCHA
+        function showCaptcha() {
+            captchaModal.classList.add('show');
+            captchaOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // Reset captcha
+            resetCaptcha();
+        }
+        
+        // Fungsi untuk menutup modal CAPTCHA
+        function closeCaptcha() {
+            captchaModal.classList.remove('show');
+            captchaOverlay.classList.remove('show');
+            document.body.style.overflow = 'auto';
+            
+            // Reset captcha
+            resetCaptcha();
+        }
+        
+        // Fungsi untuk reset captcha
+        function resetCaptcha() {
+            currentX = 0;
+            verified = false;
+            sliderButton.style.left = '0px';
+            sliderFill.style.width = '0%';
+            puzzlePiece.style.left = '0px';
+            captchaContainer.classList.remove('captcha-success');
+            captchaInstruction.textContent = 'Geser slider ke kanan hingga puzzle piece pas dengan slot';
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = 'Login';
+        }
+        
+        // Fungsi untuk submit form setelah CAPTCHA berhasil - PERBAIKAN UTAMA
+        function submitForm() {
+            const distance = Math.abs(currentX - targetX);
+            
+            if (distance > tolerance) {
+                alert(`Captcha belum pas! Jarak: ${distance}px (maksimal: ${tolerance}px)`);
+                captchaInstruction.textContent = '⚠ Posisi belum tepat! Coba lagi.';
+                captchaInstruction.style.color = '#c53030';
+                return;
+            }
+            
+            // CAPTCHA berhasil
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'Memproses...';
+            
+            // Set slider position ke hidden input
+            sliderPositionInput.value = Math.round(currentX);
+            
+            // Submit form menggunakan method tradisional
+            loginForm.submit();
+        }
+        
+        // Event listeners untuk slider
+        sliderButton.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+        
+        sliderButton.addEventListener('touchstart', startDragTouch, {passive: false});
+        document.addEventListener('touchmove', dragTouch, {passive: false});
+        document.addEventListener('touchend', stopDrag);
+        
+        function startDrag(e) {
+            isDragging = true;
+            startX = e.clientX - currentX;
+            e.preventDefault();
+        }
+        
+        function startDragTouch(e) {
+            isDragging = true;
+            startX = e.touches[0].clientX - currentX;
+            e.preventDefault();
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            
+            let newX = e.clientX - startX;
+            updatePosition(newX);
+        }
+        
+        function dragTouch(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            
+            let newX = e.touches[0].clientX - startX;
+            updatePosition(newX);
+        }
+        
+        function updatePosition(newX) {
+            if (newX < 0) newX = 0;
+            if (newX > maxSlide) newX = maxSlide;
+            
+            currentX = newX;
+            
+            sliderButton.style.left = currentX + 'px';
+            const fillPercent = (currentX / maxSlide) * 100;
+            sliderFill.style.width = fillPercent + '%';
+            puzzlePiece.style.left = currentX + 'px';
+            
+            const distance = Math.abs(currentX - targetX);
+            
+            if (distance <= tolerance) {
+                captchaContainer.classList.add('captcha-success');
+                captchaInstruction.textContent = '✓ Posisi sudah tepat! Klik "Login"';
+                verified = true;
+            } else {
+                captchaContainer.classList.remove('captcha-success');
+                verified = false;
+                if (currentX < targetX - tolerance) {
+                    captchaInstruction.textContent = '→ Geser lebih ke kanan';
+                } else if (currentX > targetX + tolerance) {
+                    captchaInstruction.textContent = '← Geser sedikit ke kiri';
+                } else {
+                    captchaInstruction.textContent = 'Geser slider hingga puzzle piece pas dengan slot';
+                }
+            }
+        }
+        
+        function stopDrag() {
+            isDragging = false;
+        }
+        
+        // Close modal jika klik overlay
+        captchaOverlay.addEventListener('click', closeCaptcha);
+        
+        // Prevent closing saat klik modal
+        captchaModal.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    </script>
+</body>
+</html>
